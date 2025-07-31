@@ -19,11 +19,11 @@ RUN install-php-extensions gd mysqli soap zip ldap apcu
 COPY files/php.ini-production "$PHP_INI_DIR/php.ini"
 
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-
 RUN chmod +x /usr/local/bin/entrypoint.sh
-#ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-
-#CMD ["bash"]
 
 
+# Set the entrypoint
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
+# Use CMD to start Apache (will be passed as arguments to entrypoint.sh)
+CMD ["apache2-foreground"]
