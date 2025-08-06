@@ -1,8 +1,6 @@
 <p align="center">
 <img width="300" src="teemip_logo.png">
 </p>
-
-# Welcome
 All network administrators do recognize how important it is to have a well managed IP space: a comprehensive and up to date inventory of all subnets and IPs used in a network as well as clear and simple processes to request, change or release IPs are underlying key factors for a trouble free network.
 
 Unfortunately, in many companies or organizations, IP Management is not perceived as a critical service of IT operations. And when it is recognized as such, the price of standard solutions sold from software vendors is so high that investment in a tool is always postponed to the next fiscal exercise.
