@@ -16,3 +16,40 @@ An IP referential to manage IPv4 and IPv6 addressing plans:
  - And more as you’ll discover on this site.
  - 
 TeemIp is licensed under the terms of the (GNU Affero General Public License) [https://www.gnu.org/licenses/agpl-3.0.en.html] Version 3 as published by the Free Software Foundation.
+
+`Dockerfile`
+```
+FROM php:8.3-apache
+
+RUN apt update  -y
+RUN apt install -y \
+  nano \
+  graphviz \
+  wget \
+  zip \
+  && apt-get clean
+
+# This repository contains a script that can be used to easily install
+# a PHP extension inside the official PHP Docker images.
+# https://github.com/mlocati/docker-php-extension-installer/
+COPY --from=ghcr.io/mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+
+RUN install-php-extensions gd mysqli soap zip ldap apcu
+
+COPY files/php.ini-production "$PHP_INI_DIR/php.ini"
+
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+
+# Set the entrypoint
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+# Use CMD to start Apache (will be passed as arguments to entrypoint.sh)
+CMD ["apache2-foreground"]
+
+```
+
+```console
+docker build -t leandroecomp/teemip:0.1 -t leandroecomp/teemip:latest -f Dockerfile .
+```
