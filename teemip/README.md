@@ -1,4 +1,7 @@
-![Screenshot da aplicação teste.](teemip_logo.png)
+<p align="center">
+<img width="300" src="teemip_logo.png">
+</p>
+
 # Welcome
 All network administrators do recognize how important it is to have a well managed IP space: a comprehensive and up to date inventory of all subnets and IPs used in a network as well as clear and simple processes to request, change or release IPs are underlying key factors for a trouble free network.
 
