@@ -33,14 +33,14 @@ RUN apt install -y \
 # a PHP extension inside the official PHP Docker images.
 # https://github.com/mlocati/docker-php-extension-installer/
 COPY --from=ghcr.io/mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-
 RUN install-php-extensions gd mysqli soap zip ldap apcu
 
+# Copy custom PHP config.
 COPY files/php.ini-production "$PHP_INI_DIR/php.ini"
 
+# Copy entrypoint file and run.
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
-
 
 # Set the entrypoint
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
