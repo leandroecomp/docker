@@ -81,6 +81,7 @@ docker run --name teemip -d -p 8080:80 -v /volumes/teemip:/var/www/html  leandro
 abae78ac2d2820183db11fd86584a0eaae22ddd12a5348ad228440ba4acad78e
 ```
 
+Access browser `hjttp://teeip.localdomain:8080`
 <p align="center">
-<img width="300" src="screen.png">
+<img width="400" src="install.png">
 </p>
