@@ -17,8 +17,28 @@ An IP referential to manage IPv4 and IPv6 addressing plans:
  - An IP request workflow to process allocations, changes or releases of IP addressses or subnets;
  - And more as you’ll discover on this site.
  - 
-TeemIp is licensed under the terms of the (GNU Affero General Public License) [https://www.gnu.org/licenses/agpl-3.0.en.html] Version 3 as published by the Free Software Foundation.
+TeemIp is licensed under the terms of the [GNU Affero General Public License](https://www.gnu.org/licenses/agpl-3.0.en.html) Version 3 as published by the Free Software Foundation.
 
+
+`entrypoint.sh`
+```
+#!/bin/bash
+
+if [ ! -z "$(ls -A "/var/www/html/")" ]; then
+  echo "The Folder is not empty."
+else
+  echo "Folder empty. Proced with installation."
+  wget https://sourceforge.net/projects/teemip/files/teemip%20-%20a%20standalone%20application/3.2.1/TeemIP-3.2.1-2412.zip/download \
+    -O /tmp/TeemIP-3.2.1-2412.zip
+  unzip /tmp/TeemIP-3.2.1-2412.zip "web/*" -d /tmp/
+  cp -rf /tmp/web/* /var/www/html/
+  rm -rf /tmp/*
+  chown -R www-data:www-data /var/www/html
+fi
+
+echo "Starting Apache..."
+exec "$@"
+```
 `Dockerfile`
 ```
 FROM php:8.3-apache
