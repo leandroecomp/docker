@@ -5,6 +5,7 @@ RUN apk add --no-cache \
         libjpeg-turbo-dev \
         libwebp-dev \
         libzip-dev \
+        libxml2-dev \
         icu-dev \
         zlib-dev \
         oniguruma-dev \
@@ -21,6 +22,7 @@ RUN apk add --no-cache \
         opcache \
         mbstring \
         exif \
+        soap \
     && apk del git
 
 COPY files/php.ini /usr/local/etc/php/php.ini

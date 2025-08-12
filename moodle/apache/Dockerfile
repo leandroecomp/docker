@@ -4,6 +4,8 @@ FROM httpd:2.4
 RUN apt-get update && apt-get install -y \
     apache2-bin \
     libapache2-mod-fcgid \
+    nano \
+    iputils-ping \
     && rm -rf /var/lib/apt/lists/*
 
 #RUN a2enmod proxy_fcgi
@@ -13,6 +15,9 @@ RUN sed -i \
     -e 's/#LoadModule proxy_module/LoadModule proxy_module/' \
     -e 's/#LoadModule proxy_fcgi_module/LoadModule proxy_fcgi_module/' \
     conf/httpd.conf
+
+RUN sed -i 's/^\(DirectoryIndex.*\)$/\1 index.php/' conf/httpd.conf
+
 
 # Copy a basic virtual host config pointing to php-fpm
 COPY files/php-fpm.conf  /usr/local/apache2/conf/extra/php-fpm.conf
