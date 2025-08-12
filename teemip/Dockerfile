@@ -9,11 +9,10 @@ RUN apt install -y \
   zip \
   && apt-get clean
 
-# This repository contains a script that can be used to easily install 
-# a PHP extension inside the official PHP Docker images.
+# This repository contains a script that can be used to easily install a PHP extension 
+# inside the official PHP Docker images.
 # https://github.com/mlocati/docker-php-extension-installer/
 COPY --from=ghcr.io/mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-
 RUN install-php-extensions gd mysqli soap zip ldap apcu
 
 COPY files/php.ini-production "$PHP_INI_DIR/php.ini"
@@ -21,9 +20,6 @@ COPY files/php.ini-production "$PHP_INI_DIR/php.ini"
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-
-# Set the entrypoint
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
-# Use CMD to start Apache (will be passed as arguments to entrypoint.sh)
 CMD ["apache2-foreground"]
