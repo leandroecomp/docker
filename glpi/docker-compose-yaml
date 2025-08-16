@@ -1,0 +1,45 @@
+version: "3"
+services:
+  apache:
+    image: glpi-apache:latest 
+    container_name: glpi-apache
+    hostname: glpi-apache
+    ports:
+      - "80:80"
+    volumes:
+      - /volumes/glpi/php-fpm:/var/www/html
+    depends_on:
+      - php-fpm
+    environment:
+      PHP_FPM_HOST: php-fpm
+      PHP_FPM_PORT: 9000
+    networks:
+      - internal      
+
+  php-fpm:
+    image: glpi-php-fpm:latest 
+    container_name: glpi-php-fpm
+    hostname: glpi-php-fpm   
+    volumes:
+      - /volumes/glpi/php-fpm:/var/www/html
+    networks:
+      - internal      
+      
+  mariadb:
+    image: mariadb:11.3
+    container_name: glpi-mariadb
+    hostname: glpi-mariadb    
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: glpi
+      MYSQL_USER: glpi
+      MYSQL_PASSWORD: glpi
+    volumes:
+      - /volumes/glpi/mariadb:/var/lib/mysql
+    networks:
+      - internal      
+
+networks:
+  internal:
+    external: true      
+      
