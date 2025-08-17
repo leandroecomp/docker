@@ -52,4 +52,4 @@ services:
 
 networks:
   internal:
-    external: true 
+    external: true
