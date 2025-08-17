@@ -1,0 +1,50 @@
+version: "3"
+services:
+  apache:
+    image: moodle-apache:latest 
+    container_name: moodle-apache
+    hostname: moodle-apache
+    ports:
+      - "80:80"
+    volumes:
+      - /volumes/moodle/php-fpm:/var/www/html
+    restart: unless-stopped      
+    depends_on:
+      - php-fpm
+    environment:
+      PHP_FPM_HOST: php-fpm
+      PHP_FPM_PORT: 9000
+    networks:
+      - internal      
+
+  php-fpm:
+    image: moodle-php-fpm:latest 
+    container_name: moodle-php-fpm
+    hostname: moodle-php-fpm   
+    volumes:
+      - /volumes/moodle/php-fpm:/var/www/html
+    restart: unless-stopped      
+    depends_on:
+      - db      
+    networks:
+      - internal      
+
+
+  db:
+    image: mariadb:10.11
+    container_name: moodle-db
+    hostname: moodle-db    
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: moodle
+      MYSQL_USER: moodle
+      MYSQL_PASSWORD: moodle
+    volumes:
+      - /volumes/moodle/db:/var/lib/mysql
+    restart: unless-stopped         
+    networks:
+      - internal      
+
+networks:
+  internal:
+    external: true 
