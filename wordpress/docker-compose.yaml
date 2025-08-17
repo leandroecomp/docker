@@ -1,0 +1,55 @@
+version: "3"
+services:
+  apache:
+    image: wordpress-apache:latest 
+    container_name: wordpress-apache
+    hostname: wordpress-apache
+    ports:
+      - "80:80"
+    volumes:
+      - /volumes/wordpress/php-fpm:/var/www/html
+    restart: unless-stopped      
+    depends_on:
+      - php-fpm
+    environment:
+      PHP_FPM_HOST: php-fpm
+      PHP_FPM_PORT: 9000
+      APACHE_DOCUMENT_ROOT: /var/www/html
+    networks:
+      - internal      
+
+  php-fpm:
+    image: wordpress:6.8.2-php8.4-fpm-alpine
+    container_name: wordpress-php-fpm
+    hostname: wordpress-php-fpm   
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+      WP_ALLOW_MULTISITE: true    
+    volumes:
+      - /volumes/wordpress/php-fpm:/var/www/html
+    restart: unless-stopped      
+    depends_on:
+      - db      
+    networks:
+      - internal      
+  db:
+    image: mariadb:11.5
+    container_name: wordpress-db
+    hostname: wordpress-db    
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    volumes:
+      - /volumes/wordpress/db:/var/lib/mysql
+    restart: unless-stopped         
+    networks:
+      - internal      
+
+networks:
+  internal:
+    external: true 
