@@ -1,0 +1,30 @@
+services:
+  app: 
+    image: traefik:v3.6
+    container_name: traefik_app
+    hostname: traefik_app
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=traefik-net"
+      - "--ping"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    networks:
+      - traefik-net
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s     
+    restart: unless-stopped
+
+networks:
+  traefik-net:
+    external: true
