@@ -1,0 +1,48 @@
+services:
+  apache:
+    image: teemip:latest
+    container_name: teemip_app
+    hostname: teemip_app
+    depends_on:
+      - db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.teemip.rule=Host(`teemip.globaldomain`)"
+      - "traefik.http.routers.teemip.entrypoints=web"
+      - "traefik.http.services.teemip.loadbalancer.server.port=80"
+    networks:
+      - traefik-net
+    volumes: 
+      - /volumes/teemip/app:/var/www/html
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"] 
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  db:
+    image: mariadb:12
+    container_name: teemip_db
+    hostname: teemip_db
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpass
+      MARIADB_DATABASE: teemip
+      MARIADB_USER: teemip
+      MARIADB_PASSWORD: teemip
+    networks:
+      - traefik-net
+    volumes:
+      - /volumes/teemip/db:/var/lib/mysql
+    healthcheck: 
+      test: ["CMD", "mariadb-admin", "--user=root", "--password=rootpass", "ping"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+networks:
+  traefik-net:
+    external: true
