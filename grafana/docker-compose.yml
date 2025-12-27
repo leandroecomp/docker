@@ -1,0 +1,28 @@
+services:
+  app:
+    image: grafana/grafana
+    container_name: grafana_app
+    hostname: grafana_app
+    environment:
+      - GF_SERVER_ROOT_URL=http://grafana.globaldomain/
+      - GF_PLUGINS_PREINSTALL=grafana-clock-panel    
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.globaldomain`)"
+      - "traefik.http.routers.grafana.entrypoints=web"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+    networks:
+      - traefik-net
+    volumes:
+      - /volumes/grafana:/var/lib/grafana
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s  # Gives Grafana time to fully start      
+    restart: unless-stopped
+
+networks:
+  traefik-net:
+    external: true
