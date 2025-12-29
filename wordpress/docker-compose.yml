@@ -4,19 +4,19 @@ services:
     image: wordpress-apache:latest 
     container_name: wordpress-apache
     hostname: wordpress-apache
-    ports:
-      - "80:80"
-    volumes:
-      - /volumes/wordpress/php-fpm:/var/www/html
-    restart: unless-stopped      
     depends_on:
       - php-fpm
     environment:
       PHP_FPM_HOST: php-fpm
       PHP_FPM_PORT: 9000
       APACHE_DOCUMENT_ROOT: /var/www/html
+    ports:
+      - "80:80"
     networks:
       - internal      
+    volumes:
+      - /volumes/wordpress/php-fpm:/var/www/html
+    restart: unless-stopped      
 
   php-fpm:
     image: wordpress:6.8.2-php8.4-fpm-alpine
