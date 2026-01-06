@@ -1,54 +1,29 @@
 services:
   mongodb:
-    image: mongo:8.0
+    image: mongo:7.0
     container_name: graylog_mongodb
-    hostname: graylog_mongodb    
+    hostname: graylog_mongodb
+    # If you want to configure the settings without a mounted file, use something like the following:
+    # command: ["mongod","--ipv6","--bind_ip_all","--port 27017","--timeZoneInfo /usr/share/zoneinfo", 
+    # "--dbpath /data/db", "--logpath /var/log/mongodb/mongod.log", "--logappend"]
+    command: ["mongod", "--config", "/etc/mongod.conf"]
+    ports:
+      - 27017:27017
     networks:
       - traefik-net
     volumes:
-      - /volumes/graylog/mongodb:/data
+      - "/volumes/graylog/mongodb/data/db:/data/db" 
+      #- "/volumes/graylog/mongodb/logs:/var/log/mongodb:rw" 
+      - /etc/localtime:/etc/localtime:ro 
+      - /volumes/graylog/mongodb/mongod.conf:/etc/mongod.conf
     healthcheck:
       test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 30s      
-    restart: unless-stopped     
-
-  opensearch:
-    image: opensearchproject/opensearch:2.19.3
-    container_name: graylog_opensearch
-    hostname: graylog_opensearch       
-    environment:
-      - cluster.name=graylog
-      - node.name=node1
-      - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
-      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=N1c3p@ssw0rd!
-      - discovery.type=single-node
-      - bootstrap.memory_lock=true
-      - action.auto_create_index=false
-      - plugins.security.disabled=true
-      - indices.query.bool.max_clause_count=32768
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-    networks:
-      - traefik-net
-    volumes:
-      - /volumes/graylog/opensearch/sysctl.conf:/etc/sysctl.conf
-      - /volumes/graylog/opensearch/data:/usr/share/opensearch/data
-    healthcheck:
-      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
-      interval: 30s
-      timeout: 15s
-      retries: 3
-      start_period: 15s      
     restart: unless-stopped
-
+    
 networks:
   traefik-net:
     driver: bridge
