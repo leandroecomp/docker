@@ -12,8 +12,8 @@ services:
     networks:
       - traefik-net
     volumes:
-      - "/volumes/graylog/mongodb/data/db:/data/db" 
-      #- "/volumes/graylog/mongodb/logs:/var/log/mongodb:rw" 
+      - /volumes/graylog/mongodb/data/db:/data/db 
+      # - /volumes/graylog/mongodb/logs:/var/log/mongodb:rw 
       - /etc/localtime:/etc/localtime:ro 
       - /volumes/graylog/mongodb/mongod.conf:/etc/mongod.conf
     healthcheck:
@@ -21,9 +21,39 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 30s      
+      start_period: 15s      
     restart: unless-stopped
-    
+
+  datanode:
+    image: "graylog/graylog-datanode:6.3"
+    container_name: graylog_datanode
+    hostname: graylog_datanode    
+    depends_on:
+      - "mongodb"
+    environment:
+      GRAYLOG_DATANODE_OPENSEARCH_HEAP: "4g"
+      GRAYLOG_DATANODE_PASSWORD_SECRET: "a8b5773fa2705b60e9c2bcb2be79e76f8a760ae61898fffe022d370dbe8ae3d2"
+      #GRAYLOG_DATANODE_ROOT_USERNAME: "<admin user name>"
+      # - GRAYLOG_MONGODB_URI="mongodb://mongodb:27017/graylog"
+      GRAYLOG_DATANODE_MONGODB_URI: "mongodb://mongodb:27017/graylog"
+    ulimits:
+      memlock:
+        hard: -1
+        soft: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    ports:
+      - "127.0.0.1:8999:8999"  # Graylog Data Node REST API
+      - "127.0.0.1:9200:9200"  # OpenSearch REST API
+      - "127.0.0.1:9300:9300"  # OpenSearch Transport API
+    networks:
+      - traefik-net      
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/volumes/graylog/datanode:/var/lib/graylog-datanode"
+    restart: unless-stopped
+
 networks:
   traefik-net:
     driver: bridge
