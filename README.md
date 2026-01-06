@@ -2,8 +2,8 @@
 
 ```
 graylog
-├── /datanode
-├── /mongodb
+├── datanode
+├── mongodb
 │   ├── db
 │   └── mongod.conf
 └── server
