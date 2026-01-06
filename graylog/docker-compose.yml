@@ -33,7 +33,7 @@ services:
     environment:
       GRAYLOG_DATANODE_OPENSEARCH_HEAP: "4g"
       GRAYLOG_DATANODE_PASSWORD_SECRET: "a8b5773fa2705b60e9c2bcb2be79e76f8a760ae61898fffe022d370dbe8ae3d2"
-      #GRAYLOG_DATANODE_ROOT_USERNAME: "<admin user name>"
+      # - GRAYLOG_DATANODE_ROOT_USERNAME: "<admin user name>"
       # - GRAYLOG_MONGODB_URI="mongodb://mongodb:27017/graylog"
       GRAYLOG_DATANODE_MONGODB_URI: "mongodb://mongodb:27017/graylog"
     ulimits:
