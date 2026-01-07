@@ -4,9 +4,18 @@ services:
     container_name: graylog_mongodb
     hostname: graylog_mongodb
     # If you want to configure the settings without a mounted file, use something like the following:
-    # command: ["mongod","--ipv6","--bind_ip_all","--port 27017","--timeZoneInfo /usr/share/zoneinfo", 
-    # "--dbpath /data/db", "--logpath /var/log/mongodb/mongod.log", "--logappend"]
-    command: ["mongod", "--config", "/etc/mongod.conf"]
+    command: 
+      [
+        "mongod",
+        "--ipv6",
+        "--bind_ip_all","--timeZoneInfo",
+        "/usr/share/zoneinfo","--dbpath",
+        "/data/db","--logpath",
+        "/var/log/mongodb/mongod.log",
+        "--logappend"
+      ]
+    # Or use a mounted file
+    # command: ["mongod", "--config", "/etc/mongod.conf"]
     ports:
       - 27017:27017
     networks:
@@ -27,15 +36,16 @@ services:
   datanode:
     image: "graylog/graylog-datanode:6.3"
     container_name: graylog_datanode
-    hostname: graylog_datanode    
+    hostname: graylog_datanode
+    user: "root"
     depends_on:
       - "mongodb"
     environment:
-      GRAYLOG_DATANODE_OPENSEARCH_HEAP: "4g"
       GRAYLOG_DATANODE_PASSWORD_SECRET: "a8b5773fa2705b60e9c2bcb2be79e76f8a760ae61898fffe022d370dbe8ae3d2"
-      # - GRAYLOG_DATANODE_ROOT_USERNAME: "<admin user name>"
-      # - GRAYLOG_MONGODB_URI="mongodb://mongodb:27017/graylog"
+      #GRAYLOG_DATANODE_ROOT_USERNAME: "<admin user name>"
+      GRAYLOG_DATANODE_BIND_ADDRESS: "0.0.0.0"
       GRAYLOG_DATANODE_MONGODB_URI: "mongodb://mongodb:27017/graylog"
+      GRAYLOG_DATANODE_OPENSEARCH_HEAP: "4g"
     ulimits:
       memlock:
         hard: -1
@@ -44,14 +54,21 @@ services:
         soft: 65536
         hard: 65536
     ports:
-      - "127.0.0.1:8999:8999"  # Graylog Data Node REST API
-      - "127.0.0.1:9200:9200"  # OpenSearch REST API
-      - "127.0.0.1:9300:9300"  # OpenSearch Transport API
+      - "8999:8999"  # Graylog Data Node REST API
+      - "9200:9200"  # OpenSearch REST API
+      - "9300:9300"  # OpenSearch Transport API
     networks:
       - traefik-net      
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "/volumes/graylog/datanode:/var/lib/graylog-datanode"
+      - "/volumes/graylog/datanode/jvm.options:/etc/graylog/datanode/jvm.options"
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/127.0.0.1/9200 || exit 1'"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s      
     restart: unless-stopped
 
 networks:
