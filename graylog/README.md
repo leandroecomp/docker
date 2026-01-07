@@ -1,7 +1,7 @@
 ```
 graylog
 ├── datanode
-    ├── jvm.options
+│   ├── jvm.options
 ├── mongodb
 │   ├── db
 │   └── mongod.conf
