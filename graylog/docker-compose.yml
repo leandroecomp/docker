@@ -83,8 +83,8 @@ services:
       - traefik-net
     volumes:
       - "/volumes/graylog/server/data:/usr/share/graylog/data/data"
-    restart: "on-failure"
-
+    restart: unless-stopped
+    
 networks:
   traefik-net:
     driver: bridge
