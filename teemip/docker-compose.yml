@@ -1,8 +1,8 @@
 services:
   apache:
     image: teemip:latest
-    container_name: teemip_app
-    hostname: teemip_app
+    container_name: teemip-app
+    hostname: teemip-app
     depends_on:
       - db
     labels:
@@ -24,8 +24,8 @@ services:
 
   db:
     image: mariadb:12
-    container_name: teemip_db
-    hostname: teemip_db
+    container_name: teemip-db
+    hostname: teemip-db
     environment:
       MARIADB_ROOT_PASSWORD: rootpass
       MARIADB_DATABASE: teemip
