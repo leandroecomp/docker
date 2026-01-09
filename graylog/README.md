@@ -1,5 +1,5 @@
 ```
-/volumes/graylog
+graylog
 ├── datanode
 │   └── data
 ├── mongodb
