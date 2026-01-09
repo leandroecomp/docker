@@ -1,8 +1,8 @@
 services:
-  app:
+  grafana:
     image: grafana/grafana
-    container_name: grafana_app
-    hostname: grafana_app
+    container_name: grafana
+    hostname: grafana
     environment:
       - GF_SERVER_ROOT_URL=http://grafana.globaldomain/
       - GF_PLUGINS_PREINSTALL=grafana-clock-panel    
