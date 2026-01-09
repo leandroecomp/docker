@@ -1,16 +1,25 @@
 services:
   mongodb:
     image: "mongo:7.0"
-    restart: "on-failure"
+    container_name: "graylog-mongod"
+    hostname: "graylog-mongod"        
     networks:
       - traefik-net
     volumes:
       - /volumes/graylog/mongodb/db:/data/db
       - /volumes/graylog/mongodb/configdb:/data/configdb
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s      
+    restart: unless-stopped      
 
   datanode:
     image: "${DATANODE_IMAGE:-graylog/graylog-datanode:7.0}"
-    hostname: "datanode"
+    container_name: "graylog-datanode"
+    hostname: "graylog-datanode"
     environment:
       GRAYLOG_DATANODE_NODE_ID_FILE: "/var/lib/graylog-datanode/node-id"
       GRAYLOG_DATANODE_PASSWORD_SECRET: "${GRAYLOG_PASSWORD_SECRET:?Please configure GRAYLOG_PASSWORD_SECRET in the .env file}"
@@ -30,16 +39,25 @@ services:
       - traefik-net
     volumes:
       - "/volumes/graylog/datanode/data:/var/lib/graylog-datanode"
-    restart: "on-failure"
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/127.0.0.1/8999 || exit 1'"]
+      # After config use 9200/tcp
+      # test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/127.0.0.1/9200 || exit 1'"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s      
+    restart: unless-stopped
 
   graylog:
-    hostname: "server"
     image: "${GRAYLOG_IMAGE:-graylog/graylog:7.0}"
+    container_name: "graylog-server"
+    hostname: "graylog-server"    
     depends_on:
       mongodb:
-        condition: "service_started"
+        condition: "service_healthy"
       datanode:
-        condition: "service_started"
+        condition: "service_healthy"
     entrypoint: "/usr/bin/tini --  /docker-entrypoint.sh"
     environment:
       GRAYLOG_NODE_ID_FILE: "/usr/share/graylog/data/data/node-id"
