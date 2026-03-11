@@ -36,9 +36,8 @@ services:
     volumes:
       - /volumes/glpi/mariadb:/var/lib/mysql
     networks:
-      - internal      
+      - internal 
 
 networks:
   internal:
-    external: true      
-      
+    external: true
