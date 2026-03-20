@@ -26,4 +26,3 @@ ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 # Use CMD to start Apache (will be passed as arguments to entrypoint.sh)
 CMD ["apache2-foreground"]
-]
