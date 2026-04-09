@@ -1,5 +1,9 @@
 ### Folder structure
+
+mkdir -p /volumes/graylog/{datanode/data,mongodb/{configdb,db},server/data}
+
 ```console
+[root@docker ~]# mkdir -p /volumes/graylog/{datanode/data,mongodb/{configdb,db},server/data}
 [root@docker ~]# tree -L 2 /volumes/graylog/
 /volumes/graylog/
 ├── datanode
