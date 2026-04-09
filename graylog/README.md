@@ -1,4 +1,4 @@
-### Folders structure
+### Folder structure
 ```console
 [root@docker ~]# tree -L 2 /volumes/graylog/
 /volumes/graylog/
