@@ -1,8 +1,8 @@
 services:
   mongodb:
-    image: "mongo:7.0"
-    container_name: "graylog-mongod"
-    hostname: "graylog-mongod"        
+    image: docker.io/library/mongo:7.0.31
+    container_name: graylog-mongod
+    hostname: graylog-mongod       
     networks:
       - traefik-net
     volumes:
@@ -14,12 +14,12 @@ services:
       timeout: 10s
       retries: 3
       start_period: 15s      
-    restart: unless-stopped      
+    restart: unless-stopped
 
   datanode:
-    image: "${DATANODE_IMAGE:-graylog/graylog-datanode:7.0}"
-    container_name: "graylog-datanode"
-    hostname: "graylog-datanode"
+    image: docker.io/graylog/graylog-datanode:7.0.6-1
+    container_name: graylog-datanode
+    hostname: graylog-datanode
     environment:
       GRAYLOG_DATANODE_NODE_ID_FILE: "/var/lib/graylog-datanode/node-id"
       GRAYLOG_DATANODE_PASSWORD_SECRET: "${GRAYLOG_PASSWORD_SECRET:?Please configure GRAYLOG_PASSWORD_SECRET in the .env file}"
@@ -40,9 +40,9 @@ services:
     volumes:
       - "/volumes/graylog/datanode/data:/var/lib/graylog-datanode"
     healthcheck:
-      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/127.0.0.1/8999 || exit 1'"]
+      #test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/127.0.0.1/8999 || exit 1'"]
       # After config use 9200/tcp
-      # test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/127.0.0.1/9200 || exit 1'"]
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/127.0.0.1/9200 || exit 1'"]
       interval: 15s
       timeout: 5s
       retries: 10
@@ -50,9 +50,15 @@ services:
     restart: unless-stopped
 
   graylog:
-    image: "${GRAYLOG_IMAGE:-graylog/graylog:7.0}"
+    image: docker.io/graylog/graylog:7.0.6-1
     container_name: "graylog-server"
-    hostname: "graylog-server"    
+    hostname: "graylog-server"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.graylog.rule=Host(`graylog.globaldomain`)"
+      - "traefik.http.routers.graylog.entrypoints=websecure"
+      - "traefik.http.routers.graylog.tls.certresolver=myresolver"
+      - "traefik.http.services.graylog.loadbalancer.server.port=9000"         
     depends_on:
       mongodb:
         condition: "service_healthy"
@@ -75,17 +81,14 @@ services:
     - "9000:9000/tcp"   # Server API
     - "127.0.0.1:12201:12201/tcp" # GELF TCP
     - "127.0.0.1:12201:12201/udp" # GELF UDP
-    #- "127.0.0.1:10000:10000/tcp" # Custom TCP port
-    #- "127.0.0.1:10000:10000/udp" # Custom UDP port
     - "127.0.0.1:13301:13301/tcp" # Forwarder data
     - "127.0.0.1:13302:13302/tcp" # Forwarder config
     networks:
       - traefik-net
     volumes:
       - "/volumes/graylog/server/data:/usr/share/graylog/data/data"
-    restart: unless-stopped
-    
+    restart: unless-stopped	
+
 networks:
   traefik-net:
-    driver: bridge
     external: true
