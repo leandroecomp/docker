@@ -55,10 +55,10 @@ services:
     hostname: "graylog-server"
     labels:
       - "traefik.enable=true"
-      #- "traefik.http.routers.graylog.rule=Host(`graylog.mydomain`)"
+      #- "traefik.http.routers.graylog.rule=Host(`graylog.globaldomain`)"
       #- "traefik.http.routers.graylog.entrypoints=web"
       #- "traefik.http.services.graylog.loadbalancer.server.port=9000"  
-      - "traefik.http.routers.graylog.rule=Host(`graylog.mydomain`)"
+      - "traefik.http.routers.graylog.rule=Host(`graylog.globaldomain`)"
       - "traefik.http.routers.graylog.entrypoints=websecure"
       - "traefik.http.routers.graylog.tls.certresolver=myresolver"
       - "traefik.http.services.graylog.loadbalancer.server.port=9000"         
