@@ -56,3 +56,6 @@ graylog-1   |
 user:admin 
 pass:admin
 ```
+
+<p align="center">
+<img width="60%" src="web_interface.png"></p>
